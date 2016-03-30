@@ -69,7 +69,7 @@ public class RuntimeCompiler<T> {
 	public static RuntimeCompiler<?> instance() {
 		if (s_instance == null) s_instance = new RuntimeCompiler<Evaluator>(
 			RuntimeCompiler.class.getClassLoader(),
-			Arrays.asList(new String[] {"-target", "1.7"}));
+			Arrays.asList(new String[] {"-target", "1.8"}));
 		return s_instance;
 	}
 	

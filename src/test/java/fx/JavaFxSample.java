@@ -51,7 +51,7 @@ public class JavaFxSample extends Application {
 		Graph graph = null;
 		try {
 			// graph = new GraphMLReader().readGraph("data/graphml-sample.xml");
-			graph = new GraphMLReader().readGraph("data/socialnet2.xml");
+			graph = new GraphMLReader().readGraph("data/socialnet.xml");
 			Visualization vis = new Visualization();
 			vis.add(GROUP, graph);
 

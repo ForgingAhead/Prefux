@@ -3,7 +3,11 @@ package prefux.util.ui;
 import javafx.geometry.HPos;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.*;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
+import org.controlsfx.control.textfield.TextFields;
 
 /**
  * JavaFX component that enables keyword search over prefuse data tuples.
@@ -26,7 +30,7 @@ public class SearchPane extends GridPane {
 
         this.matchResultsLabel = new Label("          ");
         this.searchLabel = new Label("search >> ");
-        this.searchTextField = new TextField();
+        this.searchTextField = TextFields.createClearableTextField();
 
         this.matchResultsLabelColumnConstraints = new ColumnConstraints();
         this.matchResultsLabelColumnConstraints.setHalignment(HPos.LEFT);

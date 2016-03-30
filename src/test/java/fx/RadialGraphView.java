@@ -19,9 +19,13 @@ import prefux.action.assignment.FontAction;
 import prefux.action.layout.CollapsedSubtreeLayout;
 import prefux.action.layout.graph.RadialTreeLayout;
 import prefux.activity.SlowInSlowOutPacer;
+import prefux.controls.DragControl;
 import prefux.data.Graph;
 import prefux.data.Node;
+import prefux.data.Tuple;
+import prefux.data.event.TupleSetListener;
 import prefux.data.io.GraphMLReader;
+import prefux.data.tuple.DefaultTupleSet;
 import prefux.data.tuple.TupleSet;
 import prefux.render.AbstractShapeRenderer;
 import prefux.render.DefaultRendererFactory;
@@ -139,8 +143,9 @@ public class RadialGraphView extends Application {
         m_vis.putAction("animate", animate);
         m_vis.alwaysRunAfter("filter", "animate");
 
-//        setItemSorter(new TreeDepthItemSorter());
-//        addControlListener(new DragControl());
+        FxDisplay display = new FxDisplay(m_vis);
+//        display.setItemSorter(new TreeDepthItemSorter());
+        display.addControlListener(new DragControl());
 //        addControlListener(new ZoomToFitControl());
 //        addControlListener(new ZoomControl());
 //        addControlListener(new PanControl());
@@ -152,11 +157,26 @@ public class RadialGraphView extends Application {
         // filter graph and perform layout
 
 
-        FxDisplay display = new FxDisplay(m_vis);
         root.setCenter(display);
         // add the "title" label...
         root.setBottom(new SearchPane());
         m_vis.run("filter");
+
+        // maintain a set of items that should be interpolated linearly
+        // this isn't absolutely necessary, but makes the animations nicer
+        // the PolarLocationAnimator should read this set and act accordingly
+        m_vis.addFocusGroup(linear, new DefaultTupleSet());
+        m_vis.getGroup(Visualization.FOCUS_ITEMS).addTupleSetListener(
+                new TupleSetListener() {
+                    public void tupleSetChanged(TupleSet tSet, Tuple[] add, Tuple[] rem) {
+                        TupleSet linearInterp = m_vis.getGroup(linear);
+                        if (add.length < 1) return;
+                        linearInterp.clear();
+                        for (Node n = (Node) add[0]; n != null; n = n.getParent())
+                            linearInterp.addTuple(n);
+                    }
+                }
+        );
 
 
     }

@@ -30,26 +30,12 @@
  */
 package prefux;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import prefux.action.Action;
 import prefux.activity.Activity;
 import prefux.activity.ActivityMap;
-import prefux.data.Graph;
-import prefux.data.Node;
-import prefux.data.Schema;
-import prefux.data.Table;
-import prefux.data.Tree;
-import prefux.data.Tuple;
+import prefux.data.*;
 import prefux.data.expression.Expression;
 import prefux.data.expression.Predicate;
 import prefux.data.expression.parser.ExpressionParser;
@@ -64,17 +50,15 @@ import prefux.render.RendererFactory;
 import prefux.util.PrefuseConfig;
 import prefux.util.PrefuseLib;
 import prefux.util.collections.CompositeIterator;
-import prefux.visual.AggregateTable;
-import prefux.visual.VisualGraph;
-import prefux.visual.VisualItem;
-import prefux.visual.VisualTable;
-import prefux.visual.VisualTree;
-import prefux.visual.VisualTupleSet;
+import prefux.visual.*;
 import prefux.visual.expression.ValidatedPredicate;
 import prefux.visual.expression.VisiblePredicate;
 import prefux.visual.tuple.TableDecoratorItem;
 import prefux.visual.tuple.TableEdgeItem;
 import prefux.visual.tuple.TableNodeItem;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * <p>Central data structure representing an interactive Visualization.
@@ -158,7 +142,7 @@ import prefux.visual.tuple.TableNodeItem;
  * instances providing interactive views of the content of this
  * visualization. {@link Display} instances registers themselves with
  * the visualization either in their constructor or through
- * the {@link Display#setVisualization(Visualization)} method, so they
+ * the {@link FxDisplay#setVisualization(Visualization)} method, so they
  * do not otherwise need to be added manually. Displays can be configured
  * to show all or only a subset of the data in the Visualization. A
  * filtering {@link prefux.data.expression.Predicate} can be used to
@@ -192,10 +176,8 @@ import prefux.visual.tuple.TableNodeItem;
  */
 public class Visualization {
 	
-	private static final Logger log = LogManager.getLogger(Visualization.class);
-    
     /** Data group name for indicating all groups */
-    public static final String ALL_ITEMS 
+    public static final String ALL_ITEMS
         = PrefuseConfig.get("visualization.allItems");
     /** Default data group name for focus items */
     public static final String FOCUS_ITEMS
@@ -206,7 +188,7 @@ public class Visualization {
     /** Default data group name for search result items */
     public static final String SEARCH_ITEMS
         = PrefuseConfig.get("visualization.searchItems");
-    
+    private static final Logger log = LogManager.getLogger(Visualization.class);
     // visual abstraction
     // filtered tables and groups
     private Map<String, VisualTupleSet> m_visual;
@@ -1114,6 +1096,22 @@ public class Visualization {
         }
     }
 
+    /**
+     * Sets the interactivity status for all items in a given data group
+     * matching a given filter predicate.
+     *
+     * @param group the visual data group name
+     * @param p     the filter predicate determining which items to modify
+     * @param value the interactivity value to set
+     */
+    public void setInteractive(String group, Predicate p, boolean value) {
+        Iterator items = items(group, p);
+        while (items.hasNext()) {
+            VisualItem item = (VisualItem) items.next();
+            item.setInteractive(value);
+        }
+    }
+
     
     
     // ------------------------------------------------------------------------
@@ -1243,7 +1241,16 @@ public class Visualization {
     
     // ------------------------------------------------------------------------
     // Renderers
-    
+
+    /**
+     * Get the RendererFactory used by this Visualization.
+     *
+     * @return this Visualization's RendererFactory
+     */
+    public RendererFactory getRendererFactory() {
+        return m_renderers;
+    }
+
     /**
      * Set the RendererFactory used by this Visualization. The RendererFactory
      * is responsible for providing the Renderer instances used to draw
@@ -1253,14 +1260,6 @@ public class Visualization {
     public void setRendererFactory(RendererFactory rf) {
         invalidateAll();
         m_renderers = rf;
-    }
-    
-    /**
-     * Get the RendererFactory used by this Visualization.
-     * @return this Visualization's RendererFactory
-     */
-    public RendererFactory getRendererFactory() {
-        return m_renderers;
     }
     
     /**

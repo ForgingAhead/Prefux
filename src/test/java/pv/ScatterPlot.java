@@ -143,7 +143,7 @@ public class ScatterPlot {
         f.setVisible(true);
 
         // update, wait for completion, then play a 1-second animation
-        vis.updateAndWait(1).play();
+//        vis.updateAndWait(1).play();
     }
 
 }

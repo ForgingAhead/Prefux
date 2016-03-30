@@ -35,14 +35,14 @@ public class JavaFxSample extends Application {
 		launch(args);
 	}
 
-	private static final double WIDTH = 300;
-	private static final double HEIGHT = 250;
+	private static final double WIDTH = 900;
+	private static final double HEIGHT = 750;
 	private static final String GROUP = "graph";
 
 	@Override
 	public void start(Stage primaryStage) {
 
-		primaryStage.setTitle("Hello World!");
+		primaryStage.setTitle("Sample Graph");
 		BorderPane root = new BorderPane();
 		primaryStage.setScene(new Scene(root, WIDTH, HEIGHT));
 		root.getStyleClass().add("display");
@@ -51,7 +51,7 @@ public class JavaFxSample extends Application {
 		Graph graph = null;
 		try {
 			// graph = new GraphMLReader().readGraph("data/graphml-sample.xml");
-			graph = new GraphMLReader().readGraph("data/socialnet.xml");
+			graph = new GraphMLReader().readGraph("src/main/data/socialnet.xml");
 			Visualization vis = new Visualization();
 			vis.add(GROUP, graph);
 

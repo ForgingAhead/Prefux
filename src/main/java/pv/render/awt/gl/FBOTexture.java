@@ -28,8 +28,6 @@ public class FBOTexture {
         gl.glTexParameteri(GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_MAG_FILTER, GL2.GL_LINEAR);
         gl.glFramebufferTexture2D(GL2.GL_FRAMEBUFFER, GL2.GL_COLOR_ATTACHMENT0, GL2.GL_TEXTURE_2D, tid, 0);
 
-        // todo - find replacement...
-//        gl.glFramebufferDrawBuffersEXT(GL2.GL_FRAMEBUFFER, GL2.GL_COLOR_ATTACHMENT0, GL2.GL_TEXTURE_2D, tid, 0);
         gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
         gl.glBindTexture(GL2.GL_TEXTURE_2D, 0);
 

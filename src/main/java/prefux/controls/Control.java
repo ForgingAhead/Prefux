@@ -30,11 +30,12 @@
  */
 package prefux.controls;
 
-import java.util.EventListener;
-
 import javafx.event.Event;
 import javafx.event.EventType;
+import javafx.scene.input.MouseButton;
 import prefux.visual.VisualItem;
+
+import java.util.EventListener;
 
 
 /**
@@ -46,7 +47,18 @@ import prefux.visual.VisualItem;
  */
 public interface Control extends EventListener
 {
-   
+    /**
+     * Represents the use of the left mouse button
+     */
+    public static final MouseButton LEFT_MOUSE_BUTTON = MouseButton.PRIMARY;
+    /**
+     * Represents the use of the middle mouse button
+     */
+    public static final MouseButton MIDDLE_MOUSE_BUTTON = MouseButton.MIDDLE;
+    /**
+     * Represents the use of the right mouse button
+     */
+    public static final MouseButton RIGHT_MOUSE_BUTTON = MouseButton.SECONDARY;
     
     /**
      * Indicates if this Control is currently enabled for item events.
@@ -56,17 +68,17 @@ public interface Control extends EventListener
     public boolean isItemEventEnabled();
     
     /**
-     * Indicates if this Control is currently enabled for non item events.
-     * 
-     * @return
-     */
-    public boolean isNonItemEventEnabled();
-    
-    /**
      * Sets the enabled status for item events of this control.
      * @param enabled true to enable the control, false to disable it
      */
     public void setItemEventEnabled(boolean enabled);
+
+    /**
+     * Indicates if this Control is currently enabled for non item events.
+     *
+     * @return
+     */
+    public boolean isNonItemEventEnabled();
 
     /**
      * Sets the enabled status for non item events of this control.

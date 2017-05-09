@@ -20,6 +20,7 @@ import prefux.action.layout.CollapsedSubtreeLayout;
 import prefux.action.layout.graph.RadialTreeLayout;
 import prefux.activity.SlowInSlowOutPacer;
 import prefux.controls.DragControl;
+import prefux.controls.ZoomToFitControl;
 import prefux.data.Graph;
 import prefux.data.Node;
 import prefux.data.Tuple;
@@ -40,7 +41,7 @@ import prefux.visual.expression.InGroupPredicate;
 import java.util.Iterator;
 
 public class RadialGraphView extends Application {
-    public static final String DATA_FILE = "src/main/data/socialnet.xml";
+    public static final String DATA_FILE = "socialnet.xml";
     private static final double WIDTH = 900;
     private static final double HEIGHT = 750;
     private static final String GROUP = "graph";
@@ -48,10 +49,10 @@ public class RadialGraphView extends Application {
     private static final String treeNodes = "tree.nodes";
     private static final String treeEdges = "tree.edges";
     private static final String linear = "linear";
-    private LabelRenderer m_nodeRenderer;
-    private EdgeRenderer m_edgeRenderer;
-    private String m_label = "label";
-    private Visualization m_vis;
+    private static Visualization vis;
+    private LabelRenderer nodeRenderer;
+    private EdgeRenderer edgeRenderer;
+    private String label = "label";
     private Graph graph;
 
     public static void main(String[] args) {
@@ -68,58 +69,56 @@ public class RadialGraphView extends Application {
 
         // -- set up visualization --
         graph = new GraphMLReader().readGraph(DATA_FILE);
-        m_vis = new Visualization();
+        vis = new Visualization();
 
-        m_vis.add(tree, this.graph);
-        m_vis.setInteractive(treeEdges, null, false);
+        vis.add(tree, this.graph);
+        vis.setInteractive(treeEdges, null, false);
 
         // -- set up renderers --
-        m_nodeRenderer = new LabelRenderer(m_label);
-        m_nodeRenderer.setRenderType(AbstractShapeRenderer.RENDER_TYPE_FILL);
-        m_nodeRenderer.setHorizontalAlignment(Constants.CENTER);
-        m_edgeRenderer = new EdgeRenderer();
+        nodeRenderer = new LabelRenderer(label);
+        nodeRenderer.setRenderType(AbstractShapeRenderer.RENDER_TYPE_FILL);
+        nodeRenderer.setHorizontalAlignment(Constants.CENTER);
+        edgeRenderer = new EdgeRenderer();
 
-        DefaultRendererFactory rf = new DefaultRendererFactory(m_nodeRenderer);
-        rf.add(new InGroupPredicate(treeEdges), m_edgeRenderer);
-        m_vis.setRendererFactory(rf);
+        DefaultRendererFactory rf = new DefaultRendererFactory(nodeRenderer);
+        rf.add(new InGroupPredicate(treeEdges), edgeRenderer);
+        vis.setRendererFactory(rf);
 
         // colors
         ItemAction nodeColor = new NodeColorAction(treeNodes);
         ItemAction textColor = new TextColorAction(treeNodes);
-        m_vis.putAction("textColor", textColor);
+        vis.putAction("textColor", textColor);
 
-        ItemAction edgeColor = new ColorAction(treeEdges,
-                VisualItem.STROKECOLOR, ColorLib.rgb(200, 200, 200));
+        ItemAction edgeColor = new ColorAction(treeEdges, VisualItem.STROKECOLOR, ColorLib.rgb(200, 200, 200));
 
-        FontAction fonts = new FontAction(treeNodes,
-                FontLib.getFont("Tahoma", 10));
+        FontAction fonts = new FontAction(treeNodes, FontLib.getFont("Tahoma", 10));
         fonts.add("ingroup('_focus_')", FontLib.getFont("Tahoma", 11));
 
         // recolor
         ActionList recolor = new ActionList();
         recolor.add(nodeColor);
         recolor.add(textColor);
-        m_vis.putAction("recolor", recolor);
+        vis.putAction("recolor", recolor);
 
         // repaint
         ActionList repaint = new ActionList();
         repaint.add(recolor);
         repaint.add(new RepaintAction());
-        m_vis.putAction("repaint", repaint);
+        vis.putAction("repaint", repaint);
 
         // animate paint change
         ActionList animatePaint = new ActionList(400);
         animatePaint.add(new ColorAnimator(treeNodes));
         animatePaint.add(new RepaintAction());
-        m_vis.putAction("animatePaint", animatePaint);
+        vis.putAction("animatePaint", animatePaint);
 
         // create the tree layout action
         RadialTreeLayout treeLayout = new RadialTreeLayout(tree);
         //treeLayout.setAngularBounds(-Math.PI/2, Math.PI);
-        m_vis.putAction("treeLayout", treeLayout);
+        vis.putAction("treeLayout", treeLayout);
 
         CollapsedSubtreeLayout subLayout = new CollapsedSubtreeLayout(tree);
-        m_vis.putAction("subLayout", subLayout);
+        vis.putAction("subLayout", subLayout);
 
         // create the filtering and layout
         ActionList filter = new ActionList();
@@ -130,7 +129,7 @@ public class RadialGraphView extends Application {
         filter.add(textColor);
         filter.add(nodeColor);
         filter.add(edgeColor);
-        m_vis.putAction("filter", filter);
+        vis.putAction("filter", filter);
 
         // animated transition
         ActionList animate = new ActionList(1250);
@@ -140,17 +139,17 @@ public class RadialGraphView extends Application {
         animate.add(new PolarLocationAnimator(treeNodes, linear));
         animate.add(new ColorAnimator(treeNodes));
         animate.add(new RepaintAction());
-        m_vis.putAction("animate", animate);
-        m_vis.alwaysRunAfter("filter", "animate");
+        vis.putAction("animate", animate);
+        vis.alwaysRunAfter("filter", "animate");
 
-        FxDisplay display = new FxDisplay(m_vis);
+        FxDisplay display = new FxDisplay(vis);
 //        display.setItemSorter(new TreeDepthItemSorter());
         display.addControlListener(new DragControl());
-//        addControlListener(new ZoomToFitControl());
-//        addControlListener(new ZoomControl());
-//        addControlListener(new PanControl());
-//        addControlListener(new FocusControl(1, "filter"));
-//        addControlListener(new HoverActionControl("repaint"));
+        display.addControlListener(new ZoomToFitControl());
+//        display.addControlListener(new ZoomControl());
+//        display.addControlListener(new PanControl());
+//        display.addControlListener(new FocusControl(1, "filter"));
+//        display.addControlListener(new HoverActionControl("repaint"));
 
         // ------------------------------------------------
 
@@ -160,16 +159,16 @@ public class RadialGraphView extends Application {
         root.setCenter(display);
         // add the "title" label...
         root.setBottom(new SearchPane());
-        m_vis.run("filter");
+        vis.run("filter");
 
         // maintain a set of items that should be interpolated linearly
         // this isn't absolutely necessary, but makes the animations nicer
         // the PolarLocationAnimator should read this set and act accordingly
-        m_vis.addFocusGroup(linear, new DefaultTupleSet());
-        m_vis.getGroup(Visualization.FOCUS_ITEMS).addTupleSetListener(
+        vis.addFocusGroup(linear, new DefaultTupleSet());
+        vis.getGroup(Visualization.FOCUS_ITEMS).addTupleSetListener(
                 new TupleSetListener() {
                     public void tupleSetChanged(TupleSet tSet, Tuple[] add, Tuple[] rem) {
-                        TupleSet linearInterp = m_vis.getGroup(linear);
+                        TupleSet linearInterp = vis.getGroup(linear);
                         if (add.length < 1) return;
                         linearInterp.clear();
                         for (Node n = (Node) add[0]; n != null; n = n.getParent())
@@ -194,10 +193,10 @@ public class RadialGraphView extends Application {
         }
 
         public void run(double frac) {
-            TupleSet focus = m_vis.getGroup(Visualization.FOCUS_ITEMS);
+            TupleSet focus = vis.getGroup(Visualization.FOCUS_ITEMS);
             if (focus == null || focus.getTupleCount() == 0) return;
 
-            Graph g = (Graph) m_vis.getGroup(m_group);
+            Graph g = (Graph) vis.getGroup(m_group);
             Node f = null;
             Iterator tuples = focus.tuples();
             while (tuples.hasNext() && !g.containsTuple(f = (Node) tuples.next())) {

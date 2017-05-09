@@ -23,6 +23,7 @@ import prefux.data.expression.Predicate;
 import prefux.data.expression.parser.ExpressionParser;
 import prefux.data.io.DataIOException;
 import prefux.data.io.GraphMLReader;
+import prefux.render.CombinedRenderer;
 import prefux.render.DefaultRendererFactory;
 import prefux.render.LabelRenderer;
 import prefux.render.ShapeRenderer;
@@ -31,13 +32,13 @@ import prefux.util.PrefuseLib;
 import prefux.visual.VisualItem;
 
 public class JavaFxSample extends Application {
-	public static void main(String[] args) {
-		launch(args);
-	}
-
 	private static final double WIDTH = 900;
 	private static final double HEIGHT = 750;
 	private static final String GROUP = "graph";
+
+    public static void main(String[] args) {
+        launch(args);
+    }
 
 	@Override
 	public void start(Stage primaryStage) {
@@ -45,7 +46,8 @@ public class JavaFxSample extends Application {
 		primaryStage.setTitle("Sample Graph");
 		BorderPane root = new BorderPane();
 		primaryStage.setScene(new Scene(root, WIDTH, HEIGHT));
-		root.getStyleClass().add("display");
+        root.getStylesheets().add("prefux/prefux.css");
+        root.getStyleClass().add("display");
 		primaryStage.show();
 
 		Graph graph = null;
@@ -60,12 +62,12 @@ public class JavaFxSample extends Application {
 			LabelRenderer lr = new LabelRenderer("name");
 			ShapeRenderer male = new ShapeRenderer();
 			male.setFillMode(ShapeRenderer.GRADIENT_SPHERE);
-			// lr.translate(5.0, 5.0);
-			// LabelRenderer lr2 = new LabelRenderer("name");
-			// lr2.addStyle("invisible");
-			// BorderPaneRenderer r = new BorderPaneRenderer();
-//			CombinedRenderer r = new CombinedRenderer();
-//			r.add(lr);
+            lr.translate(5.0, 5.0);
+            LabelRenderer lr2 = new LabelRenderer("name");
+            lr2.addStyle("invisible");
+            // BorderPaneRenderer r = new BorderPaneRenderer();
+            CombinedRenderer r = new CombinedRenderer();
+            r.add(lr);
 //			r.add(sr);
 
 			// create a new default renderer factory
@@ -108,11 +110,9 @@ public class JavaFxSample extends Application {
 					ColorLib.rgb(1,70,54)
 			};
 
-			DataColorAction colorF = new DataColorAction(NODES, expFemale, "age",
-			        Constants.NUMERICAL, VisualItem.FILLCOLOR, femalePalette);
-			DataColorAction colorM = new DataColorAction(NODES, expMale, "age",
-			        Constants.NUMERICAL, VisualItem.FILLCOLOR, malePalette);
-			nodeActions.add(colorF);
+            DataColorAction colorF = new DataColorAction(NODES, expFemale, "age", Constants.NUMERICAL, VisualItem.FILLCOLOR, femalePalette);
+            DataColorAction colorM = new DataColorAction(NODES, expMale, "age", Constants.NUMERICAL, VisualItem.FILLCOLOR, malePalette);
+            nodeActions.add(colorF);
 			nodeActions.add(colorM);
 			vis.putAction("nodes", nodeActions);
 

@@ -1,16 +1,3 @@
-/*
- * Copyright (c) 2017 Mercuria Energy America, Inc.
- *  All rights reserved.
- *
- *  This software is the confidential and proprietary information of
- *  Mercuria Energy America, Inc ("Confidential Information").  You
- *  shall not disclose such Confidential Information and shall use
- *  it only in accordance with the terms of the license agreement you
- *  entered into with Mercuria Energy America, Inc.
- *
- *  JUNGAndJavaFX
- *  jchildress
- */
 package fx;
 
 import edu.uci.ics.jung.algorithms.layout.CircleLayout;

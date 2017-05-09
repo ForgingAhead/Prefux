@@ -21,6 +21,10 @@ dependencies {
     compile 'org.jogamp.jogl:newt:2.3.2'
     compile 'org.jogamp.jogl:nativewindow:2.3.2'
 
+    compile 'net.sf.jung:jung-api:2.1.1'
+    compile 'net.sf.jung:jung-graph-impl:2.1.1'
+    compile 'net.sf.jung:jung-visualization:2.1.1'
+
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.5'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.5'
 
